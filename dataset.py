@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from torch_geometric.datasets import TUDataset, Planetoid
+import torch_geometric.transforms as T
+from torch_geometric.datasets import TUDataset, Planetoid, ShapeNet
 
 print("====ENZYMES====")
 dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
@@ -41,4 +42,17 @@ print("data.is_undirected =", data.is_undirected())
 print("data.train_mask.sum().item() =", data.train_mask.sum().item())
 print("data.val_mask.sum().item() =", data.val_mask.sum().item())
 print("data.test_mask.sum().item() =", data.test_mask.sum().item())
+
+print("====ShapeNet====")
+dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'])
+print("dataset[0] =", dataset[0])
+
+dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'],
+                   pre_transform=T.KNNGraph(k=6))
+print("create edges, dataset[0] :", dataset[0])
+
+dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'],
+                   pre_transform=T.KNNGraph(k=6),
+                   transform=T.RandomTranslate(0.01))
+print("augment, dataset[0] =", dataset[0])
 
