@@ -32,6 +32,7 @@ model = GCN().to(device)
 data = dataset[0].to(device)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
+print("start training...")
 model.train()
 for epoch in tqdm(range(200)):
     optimizer.zero_grad()
@@ -40,6 +41,7 @@ for epoch in tqdm(range(200)):
     loss.backward()
     optimizer.step()
 
+print("start test model")
 model.eval()
 pred = model(data).argmax(dim=1)
 correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
