@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from torch_scatter import scatter_mean
+from torch_geometric.data import Data
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 
@@ -16,4 +17,12 @@ for data in loader:
 
     x = scatter_mean(data.x, data.batch, dim=0)
     print("data.x.scatter_mean =", x.size())
+
+print("====")
+
+data_list = [Data(), Data()]
+loader = DataLoader(data_list, batch_size=32)
+
+for data in loader:
+    print("data =", data)
 
