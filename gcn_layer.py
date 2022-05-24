@@ -6,6 +6,7 @@ from torch.nn import Sequential as Seq, Linear, ReLU
 from torch_geometric.nn import MessagePassing, knn_graph
 from torch_geometric.utils import add_self_loops, degree
 from torch_geometric.datasets import Planetoid
+from torch_geometric.loader import DataLoader
 
 from tqdm import tqdm
 
@@ -25,16 +26,25 @@ class GCNConv(MessagePassing):
 
         x = self.lin(x)
 
+        print("[INFO][GCNConv::forward]")
+        print("edge_index =", edge_index)
         row, col = edge_index
+        print("row =", row)
+        print("col =", col)
         deg = degree(col, x.size(0), dtype=x.dtype)
+        print("deg =", deg)
         deg_inv_sqrt = deg.pow(-0.5)
         deg_inv_sqrt[deg_inv_sqrt == float('inf')] = 0
         norm = deg_inv_sqrt[row] * deg_inv_sqrt[col]
+        print("norm =", norm)
 
         return self.propagate(edge_index, x=x, norm=norm)
 
     def message(self, x_j, norm):
         # x_j has shape [E, out_channels]
+
+        print("[INFO][GCNConv::message]")
+        print("norm.view(-1, 1) =", norm.view(-1, 1))
 
         return norm.view(-1, 1) * x_j
 
@@ -71,7 +81,7 @@ class DynamicEdgeConv(EdgeConv):
 dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
 data = dataset[0]
-print(data)
+print("dataset[0] =", data)
 
 x, edge_index = data.x, data.edge_index
 conv1 = GCNConv(dataset.num_node_features, 32)
@@ -81,26 +91,15 @@ x = conv2(x, edge_index)
 print("dataset.num_node_features =", dataset.num_node_features)
 print("dataset.num_classes =", dataset.num_classes)
 print("GCNConv(x) =", x.size())
-exit()
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = GCN().to(device)
-data = dataset[0].to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
-
-print("start training...")
-model.train()
-for epoch in tqdm(range(200)):
-    optimizer.zero_grad()
-    out = model(data)
-    loss = F.nll_loss(out[data.train_mask], data.y[data.train_mask])
-    loss.backward()
-    optimizer.step()
-
-print("start test model")
-model.eval()
-pred = model(data).argmax(dim=1)
-correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
-acc = int(correct) / int(data.test_mask.sum())
-print("Accuracy =", acc)
+edge_conv_1 = DynamicEdgeConv(dataset.num_node_features, 128, k=6)
+edge_conv_2 = DynamicEdgeConv(128, dataset.num_classes, k=6)
+loader = DataLoader(dataset, batch_size=32, shuffle=True)
+for data in loader:
+    print("data in dataloader =", data)
+    x, batch = data.x, data.batch
+    x = edge_conv_1(x, batch)
+    x = edge_conv_2(x, batch)
+    print("DynamicEdgeConv(x) =", x.size())
+    break
 
