@@ -10,8 +10,6 @@ from torch_geometric.loader import DataLoader
 
 from tqdm import tqdm
 
-dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
-
 class GCNConv(MessagePassing):
     def __init__(self, in_channels, out_channels):
         super().__init__(aggr='add')
@@ -78,28 +76,35 @@ class DynamicEdgeConv(EdgeConv):
         edge_index = knn_graph(x, self.k, batch, loop=False, flow=self.flow)
         return super().forward(x, edge_index)
 
-dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
+def demo():
+    dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
 
-data = dataset[0]
-print("dataset[0] =", data)
+    dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
-x, edge_index = data.x, data.edge_index
-conv1 = GCNConv(dataset.num_node_features, 32)
-conv2 = GCNConv(32, dataset.num_classes)
-x = conv1(x, edge_index)
-x = conv2(x, edge_index)
-print("dataset.num_node_features =", dataset.num_node_features)
-print("dataset.num_classes =", dataset.num_classes)
-print("GCNConv(x) =", x.size())
+    data = dataset[0]
+    print("dataset[0] =", data)
 
-edge_conv_1 = DynamicEdgeConv(dataset.num_node_features, 128, k=6)
-edge_conv_2 = DynamicEdgeConv(128, dataset.num_classes, k=6)
-loader = DataLoader(dataset, batch_size=32, shuffle=True)
-for data in loader:
-    print("data in dataloader =", data)
-    x, batch = data.x, data.batch
-    x = edge_conv_1(x, batch)
-    x = edge_conv_2(x, batch)
-    print("DynamicEdgeConv(x) =", x.size())
-    break
+    x, edge_index = data.x, data.edge_index
+    conv1 = GCNConv(dataset.num_node_features, 32)
+    conv2 = GCNConv(32, dataset.num_classes)
+    x = conv1(x, edge_index)
+    x = conv2(x, edge_index)
+    print("dataset.num_node_features =", dataset.num_node_features)
+    print("dataset.num_classes =", dataset.num_classes)
+    print("GCNConv(x) =", x.size())
+
+    edge_conv_1 = DynamicEdgeConv(dataset.num_node_features, 128, k=6)
+    edge_conv_2 = DynamicEdgeConv(128, dataset.num_classes, k=6)
+    loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    for data in loader:
+        print("data in dataloader =", data)
+        x, batch = data.x, data.batch
+        x = edge_conv_1(x, batch)
+        x = edge_conv_2(x, batch)
+        print("DynamicEdgeConv(x) =", x.size())
+        break
+    return True
+
+if __name__ == "__main__":
+    demo()
 

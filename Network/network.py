@@ -8,8 +8,6 @@ from torch_geometric.datasets import Planetoid
 
 from tqdm import tqdm
 
-dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
-
 class GCN(torch.nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -27,26 +25,33 @@ class GCN(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
+def demo():
+    dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = GCN(dataset.num_node_features, dataset.num_classes).to(device)
-data = dataset[0].to(device)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
+    dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
-print("start training...")
-model.train()
-for epoch in tqdm(range(200)):
-    optimizer.zero_grad()
-    out = model(data)
-    loss = F.nll_loss(out[data.train_mask], data.y[data.train_mask])
-    loss.backward()
-    optimizer.step()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = GCN(dataset.num_node_features, dataset.num_classes).to(device)
+    data = dataset[0].to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
-print("start test model")
-model.eval()
-pred = model(data).argmax(dim=1)
-correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
-acc = int(correct) / int(data.test_mask.sum())
-print("Accuracy =", acc)
+    print("start training...")
+    model.train()
+    for epoch in tqdm(range(200)):
+        optimizer.zero_grad()
+        out = model(data)
+        loss = F.nll_loss(out[data.train_mask], data.y[data.train_mask])
+        loss.backward()
+        optimizer.step()
+
+    print("start test model")
+    model.eval()
+    pred = model(data).argmax(dim=1)
+    correct = (pred[data.test_mask] == data.y[data.test_mask]).sum()
+    acc = int(correct) / int(data.test_mask.sum())
+    print("Accuracy =", acc)
+    return True
+
+if __name__ == "__main__":
+    demo()
 
