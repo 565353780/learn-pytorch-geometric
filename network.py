@@ -8,6 +8,8 @@ from torch_geometric.datasets import Planetoid
 
 from tqdm import tqdm
 
+dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
+
 class GCN(torch.nn.Module):
     def __init__(self, in_channels, out_channels):
         super().__init__()
@@ -25,7 +27,7 @@ class GCN(torch.nn.Module):
 
         return F.log_softmax(x, dim=1)
 
-dataset = Planetoid(root='/tmp/Cora', name='Cora')
+dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = GCN(dataset.num_node_features, dataset.num_classes).to(device)

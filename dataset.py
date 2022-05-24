@@ -4,8 +4,10 @@
 import torch_geometric.transforms as T
 from torch_geometric.datasets import TUDataset, Planetoid, ShapeNet
 
+dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
+
 print("====ENZYMES====")
-dataset = TUDataset(root='/tmp/ENZYMES', name='ENZYMES')
+dataset = TUDataset(root=dataset_root + 'ENZYMES', name='ENZYMES')
 
 print("dataset :", dataset)
 print("len =", len(dataset))
@@ -28,7 +30,7 @@ print("train_dataset =", train_dataset)
 print("test_dataset =", test_dataset)
 
 print("====Cora====")
-dataset = Planetoid(root='/tmp/Cora', name='Cora')
+dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
 print("dataset :", dataset)
 print("len =", len(dataset))
@@ -44,14 +46,14 @@ print("data.val_mask.sum().item() =", data.val_mask.sum().item())
 print("data.test_mask.sum().item() =", data.test_mask.sum().item())
 
 print("====ShapeNet====")
-dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'])
+dataset = ShapeNet(root=dataset_root + 'ShapeNet', categories=['Airplane'])
 print("dataset[0] =", dataset[0])
 
-dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'],
+dataset = ShapeNet(root=dataset_root + 'ShapeNet', categories=['Airplane'],
                    pre_transform=T.KNNGraph(k=6))
 print("create edges, dataset[0] :", dataset[0])
 
-dataset = ShapeNet(root='/tmp/ShapeNet', categories=['Airplane'],
+dataset = ShapeNet(root=dataset_root + 'ShapeNet', categories=['Airplane'],
                    pre_transform=T.KNNGraph(k=6),
                    transform=T.RandomTranslate(0.01))
 print("augment, dataset[0] =", dataset[0])

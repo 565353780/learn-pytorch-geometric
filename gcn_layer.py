@@ -9,6 +9,8 @@ from torch_geometric.datasets import Planetoid
 
 from tqdm import tqdm
 
+dataset_root = "/home/chli/chLi/Download/DeepLearning/Dataset/PytorchGeometric/"
+
 class GCNConv(MessagePassing):
     def __init__(self, in_channels, out_channels):
         super().__init__(aggr='add')
@@ -66,7 +68,7 @@ class DynamicEdgeConv(EdgeConv):
         edge_index = knn_graph(x, self.k, batch, loop=False, flow=self.flow)
         return super().forward(x, edge_index)
 
-dataset = Planetoid(root='/tmp/Cora', name='Cora')
+dataset = Planetoid(root=dataset_root + 'Cora', name='Cora')
 
 data = dataset[0]
 print(data)
