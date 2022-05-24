@@ -15,28 +15,8 @@ pip install tqdm
 
 ## Run
 
-### Data class usage
-
 ```bash
-python data.py
-```
-
-### Dataset class usage
-
-```bash
-python dataset.py
-```
-
-### DataLoader class usage
-
-```bash
-python dataloader.py
-```
-
-### Network training usage
-
-```bash
-python network.py
+python demo.py
 ```
 
 ## Enjoy it~
