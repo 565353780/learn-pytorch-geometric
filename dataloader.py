@@ -17,6 +17,7 @@ for data in loader:
 
     x = scatter_mean(data.x, data.batch, dim=0)
     print("data.x.scatter_mean =", x.size())
+    break
 
 print("====")
 
