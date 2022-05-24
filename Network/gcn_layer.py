@@ -8,8 +8,6 @@ from torch_geometric.utils import add_self_loops, degree
 from torch_geometric.datasets import Planetoid
 from torch_geometric.loader import DataLoader
 
-from tqdm import tqdm
-
 class GCNConv(MessagePassing):
     def __init__(self, in_channels, out_channels):
         super().__init__(aggr='add')
